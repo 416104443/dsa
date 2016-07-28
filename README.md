@@ -13,6 +13,7 @@ Compiler support for C++11 or later.
 
 * [spinlock](./spinlock/)
 * [ringbuffer](./ringbuffer/)
+* [dynamic_ringbuffer](./dynamic_ringbuffer/)
 
 ## info
 
