@@ -27,12 +27,6 @@ daltonmwoodard@gmail.com
 
 ### official repository
 
-#### spinlock
-
-https://github.com/daltonwoodard/spinlock.git
-
-#### dsa
-
 https://github.com/daltonwoodard/dsa.git
 
 ### License
