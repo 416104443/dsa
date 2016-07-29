@@ -5,6 +5,17 @@ dsa
 
 dsa is a utility library of data structures and algorithms for C++11 and later.
 
+All of the components are written in the style of the (modern, i.e. C++11 and
+onwards) C++ Standard Template Library, and are intentionally designed to be
+fully compatible with the data structures and algorithms provided therein. All
+code is written to be portable across platforms so long as they support the
+C++11 standard.
+
+Future goals include parallelization extensions, where appropriate for each
+provided data structure and algorithm, in the style of the C++17 [Library
+Extensions for Parallelism]
+(http://en.cppreference.com/w/cpp/experimental/parallelism).
+
 ## dependencies
 
 Compiler support for C++11 or later.
