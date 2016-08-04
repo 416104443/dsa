@@ -22,9 +22,10 @@ Compiler support for C++11 or later.
 
 ## index
 
-* [spinlock](./spinlock/)
-* [ringbuffer](./ringbuffer/)
-* [dynamic_ringbuffer](./dynamic_ringbuffer/)
+* [dynamic_ringbuffer](./dynamic_ringbuffer)
+* [ringbuffer](./ringbuffer)
+* [sorting](./sorting)
+* [spinlock](./spinlock)
 
 ## info
 
