@@ -1,17 +1,17 @@
 //
 // dsa is a utility library of data structures and algorithms built with C++11.
-// This file (blocksort.hpp) is part of the dsa project.
+// This file (shellsort.hpp) is part of the dsa project.
 //
-// A description of the blocksort algorithm can be found here:
+// A description of the shellsort algorithm can be found here:
 //
-//      https://en.wikipedia.org/wiki/Block_sort
+//      https://en.wikipedia.org/wiki/Shellsort
 //
 // author: Dalton Woodard
 // contact: daltonmwoodard@gmail.com
 // repository: https://github.com/daltonwoodard/sorting.git
 // license:
 //
-// Copyright (c) 2016 DaltonWoodard. See the COPYRIGHT.md file at the top-level
+// Copyright (c) 2016 Dalton Woodard. See the COPYRIGHT.md file at the top-level
 // directory or at the listed source repository for details.
 //
 //      Licensed under the Apache License. Version 2.0:
@@ -25,10 +25,10 @@
 #ifndef DSA_SORTING_SHELLSORT_HPP
 #define DSA_SORTING_SHELLSORT_HPP
 
-#include <algorithm>    // std::rotate, std::swap_ranges
 #include <array>        // std::array
-#include <cstdint>      // std::uint16_t, std::uint32_t, std::uint64_t
-#include <iterator>     // std::iter_swap, std::iterator_traits
+#include <cstddef>      // std::size_t
+#include <functional>   // std::less
+#include <iterator>     // std::iterator_traits
 #include <utility>      // std::swap
 
 
@@ -44,7 +44,7 @@ namespace
 
     static constexpr std::array <std::size_t, 6>
         sedgewick86_seq {{1073, 281, 77, 23, 8, 1}};
-}   // annonymous namespace
+}   // anonymous namespace
 
     enum class shellseq
     {
@@ -60,10 +60,10 @@ namespace
      *
      *      https://en.wikipedia.org/wiki/Shellsort
      *
-     *  Descriptoin
+     *  Description
      *  -----------
      *
-     *  shellsort is a non-stable sorting algorithm with O(1) space complexiy,
+     *  shellsort is a non-stable sorting algorithm with O(1) space complexity,
      *  O(n·log n) best case, O(n·log^2 n) average case, and a (sometimes) unknown
      *  worst case time complexity (depending on chosen gap-sequence). It is
      *  suitable for sorting small sequences and generally performs better than
@@ -135,7 +135,6 @@ namespace
     )
     {
         using value_type = typename std::iterator_traits <RandomIt>::value_type;
-
         shellsort (first, last, std::less <value_type> {}, seq);
     }
 }   // namespace dsa
