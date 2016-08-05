@@ -11,7 +11,7 @@
 // repository: https://github.com/daltonwoodard/sorting.git
 // license:
 //
-// Copyright (c) 2016 DaltonWoodard. See the COPYRIGHT.md file at the top-level
+// Copyright (c) 2016 Dalton Woodard. See the COPYRIGHT.md file at the top-level
 // directory or at the listed source repository for details.
 //
 //      Licensed under the Apache License. Version 2.0:
@@ -25,11 +25,11 @@
 #ifndef DSA_SORTING_BLOCKSORT_HPP
 #define DSA_SORTING_BLOCKSORT_HPP
 
-#include <algorithm>    // std::rotate, std::swap_ranges
+#include <algorithm>    // std::rotate, std::inplace_merge
 #include <array>        // std::array
-#include <cstdint>      // std::uint16_t, std::uint32_t, std::uint64_t
-#include <iterator>     // std::iter_swap, std::iterator_traits
-#include <utility>      // std::swap
+#include <cstddef>      // std::size_t
+#include <functional>   // std::less
+#include <iterator>     // std::iterator_traits
 
 
 namespace dsa
@@ -59,7 +59,7 @@ namespace
             }
         }
     }
-}   // annonymous namespace
+}   // anonymous namespace
 
     /*
      * blocksort sorting algorithm
@@ -71,7 +71,7 @@ namespace
      *  Description
      *  -----------
      *
-     *  blocksort is a stable sorting algorithm with O(1) space complexiy, O(n)
+     *  blocksort is a stable sorting algorithm with O(1) space complexity, O(n)
      *  best case and O(n·log n) average and worse case time complexities. It is
      *  an adaptive, hybrid algorithm combining merge operations and insertion
      *  sorts (in our implementation the insertion sort is replaced by a
