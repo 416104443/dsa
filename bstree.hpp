@@ -714,7 +714,7 @@ namespace detail
         ~bstree (void) = default;
 
         explicit bstree (Compare const & key_comp,
-                             Allocator const & key_alloc = Allocator ())
+                         Allocator const & key_alloc = Allocator ())
             : _key_comp   {key_comp}
             , _node_alloc {key_alloc}
             , _tree_root  {
@@ -744,9 +744,9 @@ namespace detail
 
         template <class InputIt>
         bstree (InputIt first,
-                    InputIt last,
-                    Compare const & key_comp    = Compare (),
-                    Allocator const & key_alloc = Allocator ())
+                InputIt last,
+                Compare const & key_comp    = Compare (),
+                Allocator const & key_alloc = Allocator ())
             : _key_comp   {key_comp}
             , _node_alloc {key_alloc}
             , _tree_root  {
@@ -809,7 +809,7 @@ namespace detail
         }
 
         bstree (std::initializer_list <value_type> init,
-                    Allocator const & alloc)
+                Allocator const & alloc)
             : bstree (init.begin (), init.end (), Compare (), alloc)
         {}
 
