@@ -411,14 +411,13 @@ namespace detail
         template <class ... Args>
         static node * node_create (node * const parent,
                                    node_allocator & alloc,
-                                   key_type const & key,
                                    Args && ... args)
         {
             auto mem = alloc.allocate (1);
 
             try {
                 ::new (mem) node {
-                    key, value_type (std::forward <Args> (args)...), parent
+                    value_type (std::forward <Args> (args)...), parent
                 };
             } catch (...) {
                 alloc.deallocate (mem, 1);
