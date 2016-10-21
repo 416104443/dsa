@@ -310,13 +310,6 @@ namespace detail
     >
     class bstree
     {
-        // used to differentiate itertor from const_iterator
-        struct mutable_tag {};
-        struct const_tag {};
-
-        template <class>
-        class search_tree_iterator;
-
     public:
         using key_type               = Key;
         using value_type             = Key;
