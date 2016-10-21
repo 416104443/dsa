@@ -405,8 +405,8 @@ namespace detail
 
     private:
         using node_allocator = typename allocator_type::template rebind <node>;
-        using node_deleter   = std::function <void (node *)>;
-        using node_handle    = std::unique_ptr <node, node_deleter>;
+        using tree_deleter   = std::function <void (node *)>;
+        using node_handle    = std::unique_ptr <node, tree_deleter>;
 
         template <class ... Args>
         static node * node_create (node * const parent,
@@ -427,7 +427,7 @@ namespace detail
             return static_cast <node *> (mem);
         }
 
-        static void node_delete (node * n, node_allocator & alloc)
+        static void tree_delete (node * n, node_allocator & alloc)
         {
             if (!n)
                 return;
@@ -457,7 +457,7 @@ namespace detail
             copy_from (node_handle const & nh, node_allocator & a)
         {
             using namespace std::placeholders;
-            node_handle result {nullptr, std::bind (node_delete, _1, a)};
+            node_handle result {nullptr, std::bind (tree_delete, _1, a)};
 
             if (nh == nullptr)
                 return result;
@@ -501,7 +501,7 @@ namespace detail
         static node_handle move_from (node_handle & nh, node_allocator & a)
         {
             using namespace std::placeholders;
-            node_handle result {nullptr, std::bind (node_delete, _1, a)};
+            node_handle result {nullptr, std::bind (tree_delete, _1, a)};
 
             if (nh == nullptr)
                 return result;
@@ -720,7 +720,7 @@ namespace detail
             , _tree_root  {
                 nullptr,
                 std::bind (
-                    node_delete, std::placeholders::_1, this->_node_alloc
+                    tree_delete, std::placeholders::_1, this->_node_alloc
                 )
             }
             , _tree_size {0}
@@ -734,7 +734,7 @@ namespace detail
             , _tree_root  {
                 nullptr,
                 std::bind (
-                    node_delete, std::placeholders::_1, this->_node_alloc
+                    tree_delete, std::placeholders::_1, this->_node_alloc
                 )
             }
             , _tree_size {0}
@@ -752,7 +752,7 @@ namespace detail
             , _tree_root  {
                 nullptr,
                 std::bind (
-                    node_delete, std::placeholders::_1, this->_node_alloc
+                    tree_delete, std::placeholders::_1, this->_node_alloc
                 )
             }
             , _tree_size {0}
