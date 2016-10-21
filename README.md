@@ -22,6 +22,7 @@ Compiler support for C++11 or later.
 
 ## index
 
+* [bstree](./bstree)
 * [dynamic_ringbuffer](./dynamic_ringbuffer)
 * [ringbuffer](./ringbuffer)
 * [sorting](./sorting)
