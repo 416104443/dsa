@@ -2,8 +2,8 @@
 // dsa is a utility library of data structures and algorithms built with C++11.
 // This file (bst.hpp) is part of the dsa project.
 //
-// bstree; a generic binary search-tree (with unique keys) implementation for C++11
-// or later.
+// bstree; a generic binary search-tree (with unique keys) implementation for
+// C++11 or later.
 //
 // A description of a binary search tree can be found here:
 //
@@ -124,7 +124,8 @@ namespace detail
             >::type
         >
         bstree_iterator &
-            operator= (bstree_iterator <Node, Value, OTag> const & other) noexcept
+            operator= (bstree_iterator <Node, Value, OTag> const & other)
+            noexcept
         {
             this->_iter = other._iter;
             this->_state = other._state;
@@ -337,6 +338,11 @@ namespace detail
         using propogate_on_swap =
             typename alloc_traits::propogate_on_container_swap;
 
+        enum class branch
+        {
+            left, right
+        };
+
         struct node
         {
             value_type value;
@@ -375,22 +381,6 @@ namespace detail
             ~node (void)
                 noexcept (std::is_nothrow_destructible <value_type>::value)
                 = default;
-
-            void swap (node & other)
-                noexcept (noexcept (
-                    std::swap (
-                        std::declval <value_type &> (),
-                        std::declval <value_type &> ()
-                    )
-                ))
-            {
-                using std::swap;
-                swap (this->value, other.value);
-
-                std::swap (this->left, other.left);
-                std::swap (this->right, other.right);
-                std::swap (this->parent, other.parent);
-            }
         };
 
     public:
@@ -679,13 +669,6 @@ namespace detail
             }
         }
 
-        key_compare    _key_comp;
-        node_allocator _node_alloc;
-        node_handle    _tree_root;
-        size_type      _tree_size;
-        iterator       _begin;
-        iterator       _end;
-
         void set_iterators (void) noexcept
         {
             if (this->_tree_size > 0) {
@@ -705,6 +688,101 @@ namespace detail
                 this->_end = iterator {nullptr};
             }
         }
+
+        /*
+         * Transforms the left tree into the right tree:
+         *
+         *   P              P
+         *   \\             \\
+         *    N              R
+         *  // \\          // \\
+         *  A   R          N   C
+         *    // \\      // \\
+         *    B   C      A   B
+         *
+         *  returns the pointer to the node occupying the position of R,
+         *  if such a node exists, and nullptr otherwise.
+         */
+        node * rotate_left (node * n) noexcept
+        {
+            if (!n || !n->right)
+                return nullptr;
+
+            auto p = n->parent;
+            auto r = n->right;
+            auto b = r->left;
+
+            if (this->_tree_root == n) {
+                this->_tree_root.release ();
+                this->_tree_root.reset (r);
+            } else {
+                r->parent = p;
+
+                if (p->left == n)
+                    p->left = r;
+                else
+                    p->right = r;
+            }
+
+            r->left   = n;
+            n->parent = r;
+            n->right  = b;
+            if (b)
+                b->parent = n;
+
+            return r;
+        }
+
+        /*
+         * Transforms the left tree into the right tree:
+         *
+         *     P         P
+         *     \\        \\
+         *      N         L
+         *    // \\     // \\
+         *    L   C     A   N
+         *  // \\         // \\
+         *  A   B         B   C
+         *
+         *  returns the pointer to the node occupying the position of L,
+         *  if such a node exists, and nullptr otherwise.
+         */
+        node * rotate_right (node * n) noexcept
+        {
+            if (!n || !n->left)
+                return nullptr;
+
+            auto p = n->parent;
+            auto l = n->left;
+            auto b = l->right;
+
+            if (this->_tree_root == n) {
+                this->_tree_root.release ();
+                this->_tree_root.reset (l);
+            } else {
+                l->parent = p;
+
+                if (p->left == n)
+                    p->left = l;
+                else
+                    p->right = l;
+            }
+
+            l->right  = n;
+            n->parent = l;
+            n->left   = b;
+            if (b)
+                b->parent = n;
+
+            return l;
+        }
+
+        key_compare    _key_comp;
+        node_allocator _node_alloc;
+        node_handle    _tree_root;
+        size_type      _tree_size;
+        iterator       _begin;
+        iterator       _end;
 
     public:
         bstree (void)
@@ -985,6 +1063,61 @@ namespace detail
             this->_begin = iterator {};
             this->_end = iterator {};
             this->_tree_root.reset ();
+        }
+
+        /*
+         * Reshapes the underlying tree in O(N) time and O(1) space using the
+         * Day-Stout-Warren algorithm. This routine does not modify the contents
+         * of the tree nodes. This routine does not allocate additional storage.
+         *
+         * The resulting tree is complete (all levels are fully occupied except
+         * for possibly the last level, which is at least full from the left),
+         * and has a height of log_2 (N).
+         */
+        void rebalance (void) noexcept
+        {
+            if (this->_tree_size <= 1)
+                return;
+
+            // compute 2 ^ (floor (log_2 (n + 1))) - 1, where n = tree_size.
+            auto compute_bound = [] (std::size_t k)
+            {
+                std::size_t count = 0;
+                while (k > 1) {
+                    k >>= 1;
+                    count += 1;
+                }
+                return (count << 1) - 1;
+            };
+
+            // unwrap the (former) linked list into a balanced search tree
+            auto rebuild_tree = [=] (std::size_t count)
+            {
+                auto n = this->_tree_root.get ();
+                for (; count; --count) {
+                    n = this->rotate_left (n);
+                    if (n) {
+                        n = n->right;
+                    } else {
+                        break;
+                    }
+                }
+            };
+
+            // step 1: convert tree to a sorted linked list down the right
+            {
+                for (auto n = this->_tree_root.get (); n; n = n->right)
+                    for (auto r = n; r;)
+                        r = this->rotate_right (r);
+            }
+
+            // step 2: rebuild the tree
+            auto m = compute_bound (this->_tree_size + 1);
+            rebuild_tree (this->_tree_size - m);
+
+            for (auto k = m / 2; k > 1; k /= 2) {
+                rebuild_tree (k);
+            }
         }
 
         iterator erase (iterator pos)
